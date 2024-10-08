@@ -20,11 +20,21 @@ margin-right: 5px;
 }
 
 .element-container{
+display: flex;
 flex-direction: row;
+justify-content: space-between;
 margin-bottom: 5px;
-padding: 5px;
-border-width: 2px;
+margin-right: 5px;
+border-width: 1px;
 border-color: rgb(35,35,35);
+}
+
+.dic-element {
+    flex:1; 
+    flex-grow: 1;
+    flex-shrink:1;
+    margin: 5px;
+    width: 50%;
 }
 
 .dic-background{

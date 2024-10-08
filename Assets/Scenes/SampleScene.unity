@@ -478,6 +478,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d243b1769c17f8147af6011bbf4ef33d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stringIntDictionary:
+    keys: []
+    values: 
+  stringColorDictionary:
+    keys: []
+    values: []
+  intScriptDictionary:
+    keys: 
+    values: []
+  vector2ScriptDictionary:
+    keys: []
+    values: []
+  scriptScriptDictionary:
+    keys: []
+    values: []
 --- !u!4 &1550084181
 Transform:
   m_ObjectHideFlags: 0
@@ -499,7 +514,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 963194228}
   - {fileID: 705507995}
-  - {fileID: 1390570666}
   - {fileID: 898858405}
   - {fileID: 709788157}
+  - {fileID: 1390570666}
   - {fileID: 1550084181}
