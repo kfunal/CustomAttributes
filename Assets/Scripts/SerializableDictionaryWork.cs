@@ -12,8 +12,4 @@ public class SerializableDictionaryWork : MonoBehaviour
     private SerializableDictionary<Vector2, HorizontalLineWork> vector2ScriptDictionary;
     [SerializeField]
     private SerializableDictionary<NoteWork, NoteWork> scriptScriptDictionary;
-
-    private void Awake()
-    {
-    }
 }
