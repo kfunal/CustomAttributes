@@ -77,13 +77,21 @@ public static class SerializedPropertyFieldHelper
         return field;
     }
 
-    public static VisualElement CreateObjectField(SerializedProperty _property, System.Type _type, params string[] _styles)
+    public static VisualElement CreateObjectField(SerializedProperty _property, System.Action<Object> _onValueChanged, System.Type _objectType, params string[] _styles)
     {
         ObjectField field = new ObjectField
         {
             allowSceneObjects = true,
-            objectType = _type
+            objectType = _objectType
         };
+
+        field.RegisterValueChangedCallback(evt =>
+        {
+            _onValueChanged?.Invoke(evt.newValue);
+
+            if (evt.newValue != null)
+                _property.serializedObject.ApplyModifiedProperties();
+        });
 
         field.BindProperty(_property);
 
@@ -276,6 +284,25 @@ public static class SerializedPropertyFieldHelper
             if (!enm.MoveNext()) return null;
         }
         return enm.Current;
+    }
+
+    public static object GetPropertyTargetObject(this SerializedProperty property)
+    {
+        string path = property.propertyPath;
+        var target = property.serializedObject.targetObject;
+
+        string[] parts = path.Split('.');
+        for (int i = 0; i < parts.Length - 1; i++)
+        {
+            var fieldInfo = target.GetType().GetField(parts[i]);
+            if (fieldInfo != null)
+            {
+                target = fieldInfo.GetValue(target) as Object;
+            }
+        }
+
+        var lastFieldInfo = target.GetType().GetField(parts[parts.Length - 1]);
+        return lastFieldInfo.GetValue(target);
     }
 
     // private static void SetDefaultValue(SerializedProperty _property)

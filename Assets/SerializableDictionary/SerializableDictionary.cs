@@ -26,7 +26,11 @@ public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IS
     public void OnAfterDeserialize()
     {
         this.Clear();
+
         for (int i = 0; i < keys.Count; i++)
-            this[keys[i]] = values[i];
+        {
+            if (keys[i] != null)
+                this[keys[i]] = values[i];
+        }
     }
 }

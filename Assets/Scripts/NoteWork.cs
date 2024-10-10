@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[System.Serializable]
 public class NoteWork : MonoBehaviour
 {
     [Note("Note Attribute  Test", TopMargin: 10f, BottomMargin: 10f)]

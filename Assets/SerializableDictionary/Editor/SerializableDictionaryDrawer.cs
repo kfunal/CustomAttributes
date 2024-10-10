@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Collections;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -21,6 +22,7 @@ public class SerializableDictionaryDrawer : PropertyDrawer
     private Foldout foldout;
     private ScrollView scrollView;
 
+    private SerializedProperty dict;
     private SerializedProperty keys;
     private SerializedProperty values;
 
@@ -31,6 +33,7 @@ public class SerializableDictionaryDrawer : PropertyDrawer
 
     public override VisualElement CreatePropertyGUI(SerializedProperty _property)
     {
+        dict = _property;
         keys = _property.FindPropertyRelative(KEYS_PROPERTY_NAME);
         values = _property.FindPropertyRelative(VALUES_PROPERTY_NAME);
         serializedObject = _property.serializedObject;
@@ -130,7 +133,7 @@ public class SerializableDictionaryDrawer : PropertyDrawer
             SerializedPropertyType.Float => CreateFloatField(_property, ELEMENT_STYLE),
             SerializedPropertyType.String => CreateTextField(_property, ELEMENT_STYLE),
             SerializedPropertyType.Color => CreateColorField(_property, ELEMENT_STYLE),
-            SerializedPropertyType.ObjectReference => CreateObjectField(_property, _objectType, ELEMENT_STYLE),
+            SerializedPropertyType.ObjectReference => CreateObjectField(_property, OnObjectChanged, _objectType, ELEMENT_STYLE),
             SerializedPropertyType.Enum => CreateEnumField(_property, ELEMENT_STYLE),
             SerializedPropertyType.Vector2 => CreateVector2Field(_property, ELEMENT_STYLE),
             SerializedPropertyType.Vector3 => CreateVector3Field(_property, ELEMENT_STYLE),
@@ -138,6 +141,16 @@ public class SerializableDictionaryDrawer : PropertyDrawer
 
             _ => new PropertyField(_property)
         };
+    }
+
+    private void OnObjectChanged(Object _newObject)
+    {
+        if (_newObject != null)
+        {
+            var element = GetTargetObjectOfProperty(dict);
+            element.GetType().GetMethod("OnAfterDeserialize").Invoke(element, null);
+            serializedObject.ApplyModifiedProperties();
+        }
     }
 
     private Foldout CreateGenericViewElement(SerializedProperty _property)
@@ -206,13 +219,13 @@ public class SerializableDictionaryDrawer : PropertyDrawer
             case SerializedPropertyType.Vector3:
                 Vector3 vectorThreeValue = Vector3.zero;
                 while (SerializedPropertyContainElement(keys, vectorThreeValue))
-                    vectorTwoValue = GenerateRandomVector2();
+                    vectorThreeValue = GenerateRandomVector2();
                 _property.vector3Value = vectorThreeValue;
                 break;
         }
     }
-
 }
 
 #endif
+
 
