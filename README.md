@@ -49,6 +49,20 @@ In this project, I have developed various custom attributes used in the Unity In
     public SerializableDictionary<string, int> exampleDictionary;
     ```
 
+### OnValueChanged
+- **Description:** Triggers a specified method when the value of a field changes in the Inspector.
+- **Usage:** The method name is passed as a parameter to the attribute. This method is called automatically whenever the value of the field is modified.
+- **Example:**
+    ```csharp
+    [OnValueChanged("OnExampleFieldChanged")]
+    public int exampleField;
+
+    private void OnExampleFieldChanged()
+    {
+        Debug.Log("Value changed!");
+    }
+    ```
+
 ## Installation
 
 1. Clone or download the project from GitHub and add it to your Unity project.
