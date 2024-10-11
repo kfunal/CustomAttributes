@@ -531,9 +531,8 @@ MonoBehaviour:
     keys: []
     values: []
   intScriptDictionary:
-    keys: 01000000
-    values:
-    - {fileID: 1390570667}
+    keys: 
+    values: []
   vector2ScriptDictionary:
     keys: []
     values: []

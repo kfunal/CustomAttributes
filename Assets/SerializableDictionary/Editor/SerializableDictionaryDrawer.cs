@@ -1,5 +1,4 @@
 #if UNITY_EDITOR
-using System.Collections;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -22,7 +21,6 @@ public class SerializableDictionaryDrawer : PropertyDrawer
     private Foldout foldout;
     private ScrollView scrollView;
 
-    private SerializedProperty dict;
     private SerializedProperty keys;
     private SerializedProperty values;
 
@@ -33,7 +31,6 @@ public class SerializableDictionaryDrawer : PropertyDrawer
 
     public override VisualElement CreatePropertyGUI(SerializedProperty _property)
     {
-        dict = _property;
         keys = _property.FindPropertyRelative(KEYS_PROPERTY_NAME);
         values = _property.FindPropertyRelative(VALUES_PROPERTY_NAME);
         serializedObject = _property.serializedObject;
@@ -69,15 +66,6 @@ public class SerializableDictionaryDrawer : PropertyDrawer
     {
         for (int i = 0; i < keys.arraySize; i++)
             CreateElementContainer(keys.GetArrayElementAtIndex(i), values.GetArrayElementAtIndex(i));
-    }
-
-    private ToolbarButton CreateButton(string _text, EventCallback<MouseUpEvent> _onClick)
-    {
-        ToolbarButton button = new ToolbarButton();
-        button.AddToClassList(BUTTON_STYLE);
-        button.text = _text;
-        button.RegisterCallback(_onClick);
-        return button;
     }
 
     private VisualElement ButtonGroup()
@@ -119,55 +107,29 @@ public class SerializableDictionaryDrawer : PropertyDrawer
     {
         VisualElement container = new VisualElement();
         container.AddToClassList(ELEMENT_CONTAINER_STYLE);
-        container.Add(ElementByType(_key, keysType));
-        container.Add(ElementByType(_value, valuesType));
+
+        container.Add(CreatePropertyField(_key));
+        container.Add(CreatePropertyField(_value));
+
         scrollView.Add(container);
     }
 
-    private VisualElement ElementByType(SerializedProperty _property, System.Type _objectType)
+    private PropertyField CreatePropertyField(SerializedProperty _property)
     {
-        return _property.propertyType switch
-        {
-            SerializedPropertyType.Integer => CreateIntegerField(_property, ELEMENT_STYLE),
-            SerializedPropertyType.Boolean => CreateToggleField(_property, ELEMENT_STYLE),
-            SerializedPropertyType.Float => CreateFloatField(_property, ELEMENT_STYLE),
-            SerializedPropertyType.String => CreateTextField(_property, ELEMENT_STYLE),
-            SerializedPropertyType.Color => CreateColorField(_property, ELEMENT_STYLE),
-            SerializedPropertyType.ObjectReference => CreateObjectField(_property, OnObjectChanged, _objectType, ELEMENT_STYLE),
-            SerializedPropertyType.Enum => CreateEnumField(_property, ELEMENT_STYLE),
-            SerializedPropertyType.Vector2 => CreateVector2Field(_property, ELEMENT_STYLE),
-            SerializedPropertyType.Vector3 => CreateVector3Field(_property, ELEMENT_STYLE),
-            SerializedPropertyType.Generic => CreateGenericViewElement(_property),
-
-            _ => new PropertyField(_property)
-        };
+        PropertyField field = new PropertyField();
+        field.AddToClassList(ELEMENT_STYLE);
+        field.label = string.Empty;
+        field.BindProperty(_property);
+        return field;
     }
 
-    private void OnObjectChanged(Object _newObject)
+    private ToolbarButton CreateButton(string _text, EventCallback<MouseUpEvent> _onClick)
     {
-        if (_newObject != null)
-        {
-            var element = GetTargetObjectOfProperty(dict);
-            element.GetType().GetMethod("OnAfterDeserialize").Invoke(element, null);
-            serializedObject.ApplyModifiedProperties();
-        }
-    }
-
-    private Foldout CreateGenericViewElement(SerializedProperty _property)
-    {
-        Foldout foldout = new Foldout();
-        foldout.text = _property.displayName;
-
-        SerializedProperty iterator = _property.Copy();
-        SerializedProperty endProperty = _property.GetEndProperty();
-
-        while (iterator.NextVisible(true) && !SerializedProperty.EqualContents(iterator, endProperty))
-        {
-            System.Type type = GetTargetObjectOfProperty(_property).GetType();
-            foldout.Add(ElementByType(iterator, type));
-        }
-
-        return foldout;
+        ToolbarButton button = new ToolbarButton();
+        button.AddToClassList(BUTTON_STYLE);
+        button.text = _text;
+        button.RegisterCallback(_onClick);
+        return button;
     }
 
     private void SetDefaultValue(SerializedProperty _property, int _index)
@@ -219,7 +181,7 @@ public class SerializableDictionaryDrawer : PropertyDrawer
             case SerializedPropertyType.Vector3:
                 Vector3 vectorThreeValue = Vector3.zero;
                 while (SerializedPropertyContainElement(keys, vectorThreeValue))
-                    vectorThreeValue = GenerateRandomVector2();
+                    vectorThreeValue = GenerateRandomVector3();
                 _property.vector3Value = vectorThreeValue;
                 break;
         }

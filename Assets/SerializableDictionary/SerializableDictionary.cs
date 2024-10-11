@@ -29,8 +29,7 @@ public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IS
 
         for (int i = 0; i < keys.Count; i++)
         {
-            if (keys[i] != null)
-                this[keys[i]] = values[i];
+            this[keys[i]] = values[i];
         }
     }
 }
